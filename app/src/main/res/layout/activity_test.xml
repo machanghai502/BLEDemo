@@ -42,6 +42,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             >
+
             <Button
                 android:id="@+id/btn_senddiy"
                 android:layout_width="wrap_content"
@@ -52,8 +53,26 @@
                 android:id="@+id/btn_send"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
                 android:text="发默认指令" />
+
+            <Button
+                android:id="@+id/btn_read"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="跳转读取" />
+
+            <Button
+                android:id="@+id/btn_start"
+                android:layout_width="66dp"
+                android:layout_height="wrap_content"
+                android:text="开始" />
+
+            <Button
+                android:id="@+id/btn_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="结束" />
+
 
         </LinearLayout>
 
@@ -69,8 +88,8 @@
 
         <TextView
             android:id="@+id/tv_msg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="15dp"
             android:textColor="@color/mediumaquamarine" />

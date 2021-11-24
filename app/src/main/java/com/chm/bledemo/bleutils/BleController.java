@@ -20,8 +20,11 @@ import com.chm.bledemo.bleutils.callback.OnReceiverCallback;
 import com.chm.bledemo.bleutils.callback.OnWriteCallback;
 import com.chm.bledemo.bleutils.callback.ScanCallback;
 import com.chm.bledemo.bleutils.request.ReceiverRequestQueue;
+import com.chm.bledemo.thread.WriteDataThread;
 import com.chm.bledemo.utils.HexUtil;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,10 +75,16 @@ public class BleController {
     //此属性一般不用修改
     private static final String BLUETOOTH_NOTIFY_D = "00002902-0000-1000-8000-00805f9b34fb";
     //TODO 以下uuid根据公司硬件改变
-    public static final String UUID_SERVICE = "0000fff0-0000-1000-8000-00805f9b34fb";
+    /*public static final String UUID_SERVICE = "0000fff0-0000-1000-8000-00805f9b34fb";
     public static final String UUID_INDICATE = "0000000-0000-0000-8000-00805f9b0000";
     public static final String UUID_NOTIFY = "0000fff3-0000-1000-8000-00805f9b34fb";
     public static final String UUID_WRITE = "0000fff3-0000-1000-8000-00805f9b34fb";
+    public static final String UUID_READ = "3f3e3d3c-3b3a-3938-3736-353433323130";*/
+
+    public static final String UUID_SERVICE = "0003cdd0-0000-1000-8000-00805f9b0131";
+    public static final String UUID_INDICATE = "0000000-0000-0000-8000-00805f9b0000";
+    public static final String UUID_NOTIFY = "0003cdd1-0000-1000-8000-00805f9b0131";
+    public static final String UUID_WRITE = "0003cdd2-0000-1000-8000-00805f9b0131";
     public static final String UUID_READ = "3f3e3d3c-3b3a-3938-3736-353433323130";
 
     public static synchronized BleController getInstance() {
@@ -212,6 +221,7 @@ public class BleController {
 
         //设置数组进去
         mBleGattCharacteristic.setValue(HexUtil.hexStringToBytes(value));
+        //mBleGattCharacteristic.setValue(value.getBytes());
         //发送
 
         boolean b = mBleGatt.writeCharacteristic(mBleGattCharacteristic);
@@ -383,8 +393,29 @@ public class BleController {
             if (null != mReceiverRequestQueue) {
                 HashMap<String, OnReceiverCallback> map = mReceiverRequestQueue.getMap();
                 final byte[] rec = characteristic.getValue();
+
+                Log.i(TAG, "读取到的数据" + new String(rec));
+
                 for (String key : mReceiverRequestQueue.getMap().keySet()) {
                     final OnReceiverCallback onReceiverCallback = map.get(key);
+
+                    /*FileOutputStream fileOutputStream = null;
+                    try {
+                        fileOutputStream = mContext.openFileOutput("aaaa", Context.MODE_APPEND);
+
+                        fileOutputStream.write(rec);
+
+                    } catch (Exception e) {
+                        if (fileOutputStream != null) {
+                            try {
+                                fileOutputStream.close();
+                            } catch (IOException ignored) {
+
+                            }
+                        }
+                    }*/
+
+                    //更新UI
                     runOnMainThread(new Runnable() {
                         @Override
                         public void run() {
@@ -469,7 +500,7 @@ public class BleController {
     }
 
 
-    private void runOnMainThread(Runnable runnable) {
+    public void runOnMainThread(Runnable runnable) {
         if (isMainThread()) {
             runnable.run();
         } else {

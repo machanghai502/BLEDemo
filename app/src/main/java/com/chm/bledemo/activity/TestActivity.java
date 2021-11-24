@@ -1,5 +1,6 @@
 package com.chm.bledemo.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -16,9 +17,12 @@ import com.chm.bledemo.bleutils.callback.OnReceiverCallback;
 import com.chm.bledemo.bleutils.callback.OnWriteCallback;
 import com.chm.bledemo.utils.HexUtil;
 
+import java.util.Arrays;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.internal.Utils;
 
 /**
  * 类名: TestActivity
@@ -40,6 +44,13 @@ public class TestActivity extends BaseActivity {
     TextView tvMsg;
     @BindView(R.id.ed_msg)
     EditText edMsg;
+    /*@BindView(R.id.btn_read)
+    Button btnRead;*/
+    @BindView(R.id.btn_start)
+    Button btnStart;
+    @BindView(R.id.btn_end)
+    Button btnEnd;
+
 
     //震动指令
     private String mShockinstructions = "AA5502010202020232003c";
@@ -61,7 +72,19 @@ public class TestActivity extends BaseActivity {
         mBleController.RegistReciveListener(TAG, new OnReceiverCallback() {
             @Override
             public void onReceiver(byte[] value) {
-                tvMsg.setText(HexUtil.bytesToHexString(value));
+                //tvMsg.setText(HexUtil.bytesToHexString(value));
+                //tvMsg.setText(new String(value));
+                tvMsg.append(new String(value) + "|");
+            }
+        });
+
+        Button btnRead = findViewById(R.id.btn_read);
+
+        btnRead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TestActivity.this, ReadActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -82,7 +105,7 @@ public class TestActivity extends BaseActivity {
     }
 
     //点击事件
-    @OnClick({R.id.tv, R.id.btn_send, R.id.btn_senddiy, R.id.tv_msg})
+    @OnClick({R.id.tv, R.id.btn_send, R.id.btn_senddiy, R.id.tv_msg, R.id.btn_start, R.id.btn_end})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_senddiy:
@@ -95,6 +118,12 @@ public class TestActivity extends BaseActivity {
             case R.id.btn_send:
                 Write(mShockinstructions);
                 break;
+
+            case R.id.btn_start:
+                Write("ff");
+                break;
+            case R.id.btn_end:
+                Write("00");
         }
     }
 
