@@ -335,8 +335,14 @@ public class BleController {
         //发现新服务
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            Log.i(TAG, "onServicesDiscovered");
             super.onServicesDiscovered(gatt, status);
             if (null != mBleGatt && status == BluetoothGatt.GATT_SUCCESS) {
+
+               /* if (!mBleGatt.requestMtu(100)) {
+                    Log.i(TAG, "request mtu failed");
+                }
+*/
                 List<BluetoothGattService> services = mBleGatt.getServices();
                 for (int i = 0; i < services.size(); i++) {
                     HashMap<String, BluetoothGattCharacteristic> charMap = new HashMap<>();

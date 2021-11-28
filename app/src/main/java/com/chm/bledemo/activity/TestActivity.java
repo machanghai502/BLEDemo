@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +17,9 @@ import com.chm.bledemo.bleutils.BleController;
 import com.chm.bledemo.bleutils.callback.OnReceiverCallback;
 import com.chm.bledemo.bleutils.callback.OnWriteCallback;
 import com.chm.bledemo.utils.HexUtil;
+import com.hjy.bluetooth.HBluetooth;
+import com.hjy.bluetooth.exception.BluetoothException;
+import com.hjy.bluetooth.inter.SendCallBack;
 
 import java.util.Arrays;
 
@@ -66,7 +70,7 @@ public class TestActivity extends BaseActivity {
         setToolbar();
 
         //获得实例
-        mBleController = BleController.getInstance();
+        /*mBleController = BleController.getInstance();
 
         // TODO 接收数据的监听
         mBleController.RegistReciveListener(TAG, new OnReceiverCallback() {
@@ -86,7 +90,7 @@ public class TestActivity extends BaseActivity {
                 Intent intent = new Intent(TestActivity.this, ReadActivity.class);
                 startActivity(intent);
             }
-        });
+        });*/
     }
 
     /**
@@ -128,24 +132,25 @@ public class TestActivity extends BaseActivity {
     }
 
     public void Write(String value){
-        mBleController.WriteBuffer(value, new OnWriteCallback() {
-            @Override
-            public void onSuccess() {
-                Toast.makeText(TestActivity.this, "ok", Toast.LENGTH_SHORT).show();
-            }
+        HBluetooth.getInstance()
+                .send(value.getBytes(), new SendCallBack() {
+                    @Override
+                    public void onSending(byte[] command) {
+                        Log.i(TAG, "命令发送中...");
+                    }
 
-            @Override
-            public void onFailed(int state) {
-                Toast.makeText(TestActivity.this, "fail", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onSendFailure(BluetoothException bleException) {
+                        Log.e("mylog", "发送命令失败->" + bleException.getMessage());
+                    }
+                });
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         //移除接收数据的监听
-        mBleController.UnregistReciveListener(TAG);
+        //mBleController.UnregistReciveListener(TAG);
         // TODO 断开连接
         //mBleController.CloseBleConn();
     }
