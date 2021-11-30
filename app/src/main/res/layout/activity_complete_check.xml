@@ -34,14 +34,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:id="@+id/btn_get_other"
-            android:text="获取震动数据"/>
+            android:id="@+id/btn_get_audio_vibration_start"
+            android:text="开始获取震动数据"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:id="@+id/btn_get_other_end"
+            android:id="@+id/btn_get_audio_vibration_end"
             android:text="停止获取震动数据"/>
 
     </LinearLayout>
