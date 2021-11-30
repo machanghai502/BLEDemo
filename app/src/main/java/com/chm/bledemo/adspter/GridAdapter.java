@@ -17,22 +17,20 @@ public class GridAdapter extends BaseAdapter {
 
     private List<BluetoothDevice> bluetoothDeviceList;
 
-    private List<String> list;
 
-    public GridAdapter(Context mContext, List<BluetoothDevice> bluetoothDeviceList, List<String> list) {
+    public GridAdapter(Context mContext, List<BluetoothDevice> bluetoothDeviceList) {
         this.mContext = mContext;
         this.bluetoothDeviceList = bluetoothDeviceList;
-        this.list = list;
     }
 
     @Override
     public int getCount() {
-        return list.size();
+        return bluetoothDeviceList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return bluetoothDeviceList.get(position);
     }
 
     @Override
@@ -53,7 +51,7 @@ public class GridAdapter extends BaseAdapter {
             holder=(GridViewHolder) view.getTag();
         }
 
-        holder.mTexTView.setText(list.get(position));
+        holder.mTexTView.setText(bluetoothDeviceList.get(position).getName());
         holder.imageView.setBackgroundResource(R.drawable.ic_bluetooth);
 
         return view;

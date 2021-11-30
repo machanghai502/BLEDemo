@@ -20,4 +20,55 @@ public class Tools {
         }
         return stringBuilder.toString().toUpperCase();
     }
+
+    /**
+     * 将两个byte数组合并为一个
+     * @param data1  要合并的数组1
+     * @param data2  要合并的数组2
+     * @return 合并后的新数组
+     */
+    public static byte[] mergeBytes(byte[] data1, byte[] data2) {
+        if (data1 ==null) {
+            data1 = new byte[0];
+        }
+
+        if (data2 ==null) {
+            data2 = new byte[0];
+        }
+
+        byte[] data3 = new byte[data1.length + data2.length];
+        System.arraycopy(data1, 0, data3, 0, data1.length);
+        System.arraycopy(data2, 0, data3, data1.length, data2.length);
+        return data3;
+    }
+
+
+    /**
+     * byte数组中取int数值，本方法适用于(低位在后，高位在前)的顺序。和intToBytes2（）配套使用
+     */
+    public static int bytesToIntHighAhead(byte[] src, int offset) {
+        return ((src[offset] & 0xFF) << 24)
+                | ((src[offset + 1] & 0xFF) << 16)
+                | ((src[offset + 2] & 0xFF) << 8)
+                | (src[offset + 3] & 0xFF);
+    }
+
+
+    /**
+     * 两个字节byte转int数值，本方法适用于(低位在后，高位在前)的顺序。和intToBytes2（）配套使用
+     */
+    public static int towBytesToIntHighAhead(byte head, byte tail) {
+        byte[] tempByte = new byte[4];
+        tempByte[0] = 0x00;
+        tempByte[1] = 0x00;
+        tempByte[2] = head;
+        tempByte[3] = tail;
+
+
+        return ((tempByte[0] & 0xFF) << 24)
+                | ((tempByte[1] & 0xFF) << 16)
+                | ((tempByte[2] & 0xFF) << 8)
+                | (tempByte[3] & 0xFF);
+    }
+
 }

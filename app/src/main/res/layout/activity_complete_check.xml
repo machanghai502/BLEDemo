@@ -27,7 +27,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="获取数据"/>
+            android:id="@+id/btn_get_temp"
+            android:text="获取温度数据"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:id="@+id/btn_get_other"
+            android:text="获取震动数据"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:id="@+id/btn_get_other_end"
+            android:text="停止获取震动数据"/>
 
     </LinearLayout>
 

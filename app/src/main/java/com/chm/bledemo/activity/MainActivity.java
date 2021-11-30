@@ -37,8 +37,12 @@ import com.hjy.bluetooth.operator.abstra.Sender;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -67,6 +71,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private BleController mBleController;//蓝牙工具类
     private String mDeviceAddress;//当前连接的mac地址
 
+    List<Byte> byteList = new ArrayList<>(1000);
+
+    private byte[] resultByteArr = null;
+
+    //线程池是否处理完毕
+    // TODO: 2021/11/29
+    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,8 +90,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
 
         findViewById(R.id.btn_scan_ble).setOnClickListener(this);
+
+        //断开连接
         findViewById(R.id.btn_disconnect).setOnClickListener(this);
 
+        //设备接入
         findViewById(R.id.btn_device_access).setOnClickListener(this);
 
         findViewById(R.id.btn_complete_check).setOnClickListener(this);
@@ -93,11 +108,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
 
 
-
-
         //请填写你自己设备的UUID
         //低功耗蓝牙才需要如下配置BleConfig,经典蓝牙不需要new HBluetooth.BleConfig()
-        HBluetooth.BleConfig bleConfig = new HBluetooth.BleConfig();
+        /*HBluetooth.BleConfig bleConfig = new HBluetooth.BleConfig();
         bleConfig.withServiceUUID("0003cdd0-0000-1000-8000-00805f9b0131")
                 .withWriteCharacteristicUUID("0003cdd2-0000-1000-8000-00805f9b0131")
                 .withNotifyCharacteristicUUID("0003cdd1-0000-1000-8000-00805f9b0131")
@@ -119,23 +132,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     }
                 });
 
-
-
-
-
         mHBluetooth
                 //开启蓝牙功能
                 .enableBluetooth()
                 //低功耗蓝牙才需要调setBleConfig
-                .setBleConfig(bleConfig);
+                .setBleConfig(bleConfig);*/
 
 
-        initListener();
+        //initListener();
+
+
+
+
+
+
 
         // TODO: 2021/11/26 不同手机不一样
-        path =  "/sdcard/Download/bluetooth.txt";
+       /* path =  "/sdcard/Download/bluetooth.txt";
         Log.i(TAG, "====" + path);
-        File file = new File(path);
+        File file = new File(path);*/
         /*Log.i(TAG, "exists:" + file.exists());
         if (!file.exists()) {
             try {
@@ -146,10 +161,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         }*/
 
-        threadPoolExecutor = new ThreadPoolExecutor(4,4, 60, TimeUnit.SECONDS,new LinkedBlockingDeque<Runnable>());
+        //threadPoolExecutor = new ThreadPoolExecutor(4,4, 60, TimeUnit.SECONDS,new LinkedBlockingDeque<Runnable>());
 
         //Android 6.0中，某些权限属于Protected Permission,动态获取权限
-        if (Build.VERSION.SDK_INT >= 23) {
+        /*if (Build.VERSION.SDK_INT >= 23) {
             int REQUEST_CODE_CONTACT = 101;
             String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
             //验证是否许可权限
@@ -159,29 +174,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     this.requestPermissions(permissions, REQUEST_CODE_CONTACT);
                 }
             }
-        }
-
+        }*/
     }
 
-
-    public void initListener() {
-        HBluetooth.getInstance().setReceiver(new ReceiveCallBack() {
-            @Override
-            public void onReceived(DataInputStream dataInputStream, byte[] result) {
-                // 打开通知后，设备发过来的数据将在这里出现
-                //Log.e("mylog", "收到蓝牙设备返回数据->" + Tools.bytesToHexString(result));
-                //Log.e("mylog", "收到蓝牙设备返回数据->" + new String(result));
-                Log.e("mylog", System.currentTimeMillis() + ":" + new String(result));
-
-                WriteDataThread writeDataThread = new WriteDataThread(System.currentTimeMillis() + ":" + new String(result), getBaseContext(), path);
-                threadPoolExecutor.submit(writeDataThread);
-            }
-        });
-    }
 
     @Override
     public void onClick(View view) {
-
         if (view.getId() == R.id.btn_disconnect) {
             mHBluetooth.release();
         }  else if (view.getId() == R.id.btn_device_access) {
@@ -216,47 +214,55 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 //有设置扫描时间的扫描，时间到会自动结束扫描
                 //目前之后BLE蓝牙一种
                 scanWithTimeUse(type);
-            } else {
-                Log.i(TAG, "aaaa");
-                //扫描蓝牙设备,没有设置扫描时间,低功耗蓝牙会一直扫描下去
-                /*mHBluetooth.scan(type, new ScanCallBack() {
-                    @Override
-                    public void onScanStart() {
-                        Log.i(TAG, "开始扫描");
-                    }
-
-                    @Override
-                    public void onScanning(List<com.hjy.bluetooth.entity.BluetoothDevice> scannedDevices, com.hjy.bluetooth.entity.BluetoothDevice currentScannedDevice) {
-                        Log.i(TAG, "扫描中");
-                        if (scannedDevices != null && scannedDevices.size() > 0) {
-                            list.clear();
-                            list.addAll(scannedDevices);
-                            adapter.notifyDataSetChanged();
-                        }
-                    }
-
-
-                    @Override
-                    public void onError(int errorType, String errorMsg) {
-                        Log.e(TAG, "errorType:"+errorType+"  errorMsg:"+errorMsg);
-                    }
-
-                    @Override
-                    public void onScanFinished(List<BluetoothDevice> bluetoothDevices) {
-                        Log.i(TAG, "扫描结束");
-                        Toast.makeText(MainActivity.this, "扫描结束", Toast.LENGTH_LONG).show();
-                        if (bluetoothDevices != null && bluetoothDevices.size() > 0) {
-                            list.clear();
-                            list.addAll(bluetoothDevices);
-                            adapter.notifyDataSetChanged();
-                        }
-                    }
-                });*/
             }
-
         }
 
     }
+
+
+
+
+    public void initListener() {
+        HBluetooth.getInstance().setReceiver(new ReceiveCallBack() {
+            @Override
+            public void onReceived(DataInputStream dataInputStream, byte[] result) {
+                // 打开通知后，设备发过来的数据将在这里出现
+                //Log.e("mylog", "收到蓝牙设备返回数据->" + Tools.bytesToHexString(result));
+                //Log.e("mylog", "收到蓝牙设备返回数据->" + new String(result));
+                Log.e("mylog", System.currentTimeMillis() + ":" + new String(result));
+
+
+
+                //先判断总长度
+                Log.i(TAG, "总长度:" + result.length );
+
+                //分别判断0/20/40/60/80/是否是长度，以及99校验位数是否正确
+                String b1 = String.valueOf(result[0]);
+                
+                Log.i(TAG, "长度:" + b1 );
+
+                String a = new String(result, 1,19);
+
+                Log.i(TAG, "第一段的数据为:" + a );
+
+                byte b2 = result[4];
+                Log.i(TAG, "长度:" + b2 );
+
+
+                resultByteArr = Tools.mergeBytes(result, resultByteArr);
+                if (resultByteArr.length == 1000) {
+                    //放到线程池中去校验处理
+                    resultByteArr = null;
+                }
+
+
+                /*WriteDataThread writeDataThread = new WriteDataThread(System.currentTimeMillis() + ":" + new String(result), getBaseContext(), path);
+                threadPoolExecutor.submit(writeDataThread);*/
+            }
+        });
+    }
+
+
 
 
     private void scanWithTimeUse(int type) {
@@ -313,7 +319,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 Log.i(TAG, "连接成功,isConnected:" + mHBluetooth.isConnected());
 
                 //跳转下一页
-                //startActivity(MainActivity.this, TestActivity.class);
+                startActivity(MainActivity.this, TestActivity.class);
 
                 //调用发送器发送命令
                 byte[] demoCommand = new byte[]{0x01, 0x02};
