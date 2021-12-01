@@ -17,6 +17,12 @@ public class BleReceiveData {
      */
     private int humidity = 0;
 
+    //包含帧头帧尾的原始数据
+    byte[] audioData = new byte[0];
+    byte[] vibrationXData = new byte[0];
+    byte[] vibrationYData = new byte[0];
+    byte[] vibrationZData = new byte[0];
+
     public int getTemp() {
         return temp;
     }
@@ -31,5 +37,37 @@ public class BleReceiveData {
 
     public void setHumidity(int humidity) {
         this.humidity = humidity;
+    }
+
+    public byte[] getAudioData() {
+        return audioData;
+    }
+
+    public void setAudioData(byte[] audioData) {
+        this.audioData = audioData;
+    }
+
+    public byte[] getVibrationXData() {
+        return vibrationXData;
+    }
+
+    public void setVibrationXData(byte[] vibrationXData) {
+        this.vibrationXData = vibrationXData;
+    }
+
+    public byte[] getVibrationYData() {
+        return vibrationYData;
+    }
+
+    public void setVibrationYData(byte[] vibrationYData) {
+        this.vibrationYData = vibrationYData;
+    }
+
+    public byte[] getVibrationZData() {
+        return vibrationZData;
+    }
+
+    public void setVibrationZData(byte[] vibrationZData) {
+        this.vibrationZData = vibrationZData;
     }
 }

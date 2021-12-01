@@ -38,12 +38,6 @@ public class BleMsgReceiveCallBack implements ReceiveCallBack {
     //是否开始震动z，true开始
     boolean vibrationZFlag = false;
 
-    //合法数据
-    byte[] audioData = new byte[0];
-    byte[] vibrationXData = new byte[0];
-    byte[] vibrationYData = new byte[0];
-    byte[] vibrationZData = new byte[0];
-
     //是否处理完最后一帧
     boolean hasLastTempFlag = false;
     boolean hasLastAudioFlag = false;
@@ -157,13 +151,13 @@ public class BleMsgReceiveCallBack implements ReceiveCallBack {
                 }
 
                 if (currentDataType == BluetoothCommand.DATA_TYPE_AUDIO) {
-                    audioData = Tools.mergeBytes(audioData, tempByteArr);
+                    bleReceiveData.setAudioData(Tools.mergeBytes(bleReceiveData.getAudioData(), tempByteArr));
                 } else if (currentDataType == BluetoothCommand.DATA_TYPE_VIBRATION_X) {
-                    vibrationXData = Tools.mergeBytes(vibrationXData, tempByteArr);
+                    bleReceiveData.setVibrationXData(Tools.mergeBytes(bleReceiveData.getVibrationXData(), tempByteArr));
                 } else if (currentDataType == BluetoothCommand.DATA_TYPE_VIBRATION_Y) {
-                    vibrationYData = Tools.mergeBytes(vibrationYData, tempByteArr);
+                    bleReceiveData.setVibrationYData(Tools.mergeBytes(bleReceiveData.getVibrationYData(), tempByteArr));
                 } else {
-                    vibrationZData = Tools.mergeBytes(vibrationZData, tempByteArr);
+                    bleReceiveData.setVibrationZData(Tools.mergeBytes(bleReceiveData.getVibrationZData(), tempByteArr));
                 }
 
                 //如果是最后一帧
@@ -295,38 +289,6 @@ public class BleMsgReceiveCallBack implements ReceiveCallBack {
 
     public void setVibrationZFlag(boolean vibrationZFlag) {
         this.vibrationZFlag = vibrationZFlag;
-    }
-
-    public byte[] getAudioData() {
-        return audioData;
-    }
-
-    public void setAudioData(byte[] audioData) {
-        this.audioData = audioData;
-    }
-
-    public byte[] getVibrationXData() {
-        return vibrationXData;
-    }
-
-    public void setVibrationXData(byte[] vibrationXData) {
-        this.vibrationXData = vibrationXData;
-    }
-
-    public byte[] getVibrationYData() {
-        return vibrationYData;
-    }
-
-    public void setVibrationYData(byte[] vibrationYData) {
-        this.vibrationYData = vibrationYData;
-    }
-
-    public byte[] getVibrationZData() {
-        return vibrationZData;
-    }
-
-    public void setVibrationZData(byte[] vibrationZData) {
-        this.vibrationZData = vibrationZData;
     }
 
     public boolean isHasLastAudioFlag() {

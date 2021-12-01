@@ -21,7 +21,9 @@ import com.hjy.bluetooth.inter.SendCallBack;
 
 import java.io.DataInputStream;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * 完成点检Activity
@@ -43,6 +45,11 @@ public class CompleteCheckActivity extends AppCompatActivity implements View.OnC
     private BleReceiveData bleReceiveData = null;
 
     private SendCallBack sendCallBack;
+
+    private List<Integer> audioDataList = new ArrayList<>();
+    private List<Integer> vibrationXDataList = new ArrayList<>();
+    private List<Integer> vibrationYDataList = new ArrayList<>();
+    private List<Integer> vibrationZDataList = new ArrayList<>();
 
 
    /**
@@ -119,6 +126,30 @@ public class CompleteCheckActivity extends AppCompatActivity implements View.OnC
             Toast.makeText(this, "当前温度:" + temp, Toast.LENGTH_SHORT).show();
             Toast.makeText(this, "当前湿度:" + humidity, Toast.LENGTH_SHORT).show();
 
+            //数据解析
+            byte[] audioData = bleReceiveData.getAudioData();
+            byte[] vibrationXData = bleReceiveData.getVibrationXData();
+            byte[] vibrationYData = bleReceiveData.getVibrationYData();
+            byte[] vibrationZData = bleReceiveData.getVibrationZData();
+
+            Log.i(TAG, "音频数据:" + Tools.bytesToHexString(audioData));
+            Log.i(TAG, "震动数据x:" + Tools.bytesToHexString(vibrationXData));
+            Log.i(TAG, "震动数据y:" + Tools.bytesToHexString(vibrationYData));
+            Log.i(TAG, "震动数据z:" + Tools.bytesToHexString(vibrationZData));
+
+
+            extractingData(audioData, BluetoothCommand.DATA_TYPE_AUDIO);
+
+            extractingData(audioData, BluetoothCommand.DATA_TYPE_VIBRATION_X);
+            extractingData(audioData, BluetoothCommand.DATA_TYPE_VIBRATION_Y);
+            extractingData(audioData, BluetoothCommand.DATA_TYPE_VIBRATION_Z);
+
+
+            Log.i(TAG, "音频数据:" + audioDataList);
+            Log.i(TAG, "震动数据x:" + vibrationXDataList);
+            Log.i(TAG, "震动数据y:" + vibrationYDataList);
+            Log.i(TAG, "震动数据z:" + vibrationZDataList);
+
 
         } else if (v.getId() == R.id.btn_get_audio_vibration_end) {
 
@@ -143,6 +174,43 @@ public class CompleteCheckActivity extends AppCompatActivity implements View.OnC
 
             //todo 这个地方不能重置为false，因为等发起停止命令时，才上传数据，应该等确认为最后一针完毕之后，才考虑设置为false
             //otherFlag = false;
+        }
+    }
+
+    private void extractingData(byte[] audioData, byte dataType) {
+        List<Integer> tempList = new ArrayList<>();
+
+        int audioSegmentCount = audioData.length / 1000;
+        int audioSegmentCountMod = audioData.length % 1000;
+        for (int i = 0; i < audioSegmentCount  ; i++) {
+            for (int j = i * 1000 + 5; j < (i + 1) * 1000 - 3; j=j+2) {
+                byte firstByte = audioData[j];
+                byte secondByte = audioData[j+1];
+
+                int tempData = Tools.towBytesToIntHighAhead(firstByte, secondByte);
+                tempList.add(tempData);
+            }
+        }
+
+        //处理剩余的,说明不是整数
+        if (audioSegmentCountMod != 0) {
+            for (int n = audioSegmentCount * 1000 + 5; n < audioData.length - 3; n=n+2) {
+                byte firstByte = audioData[n];
+                byte secondByte = audioData[n+1];
+
+                int tempData = Tools.towBytesToIntHighAhead(firstByte, secondByte);
+                tempList.add(tempData);
+            }
+        }
+
+        if (dataType == BluetoothCommand.DATA_TYPE_AUDIO) {
+            audioDataList = tempList;
+        } else  if (dataType == BluetoothCommand.DATA_TYPE_VIBRATION_X) {
+            vibrationXDataList = tempList;
+        } else  if (dataType == BluetoothCommand.DATA_TYPE_VIBRATION_Y) {
+            vibrationYDataList = tempList;
+        } else {
+            vibrationZDataList = tempList;
         }
     }
 }
