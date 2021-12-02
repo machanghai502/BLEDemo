@@ -71,8 +71,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private BleController mBleController;//蓝牙工具类
     private String mDeviceAddress;//当前连接的mac地址
 
-    List<Byte> byteList = new ArrayList<>(1000);
-
     private byte[] resultByteArr = null;
 
     //线程池是否处理完毕

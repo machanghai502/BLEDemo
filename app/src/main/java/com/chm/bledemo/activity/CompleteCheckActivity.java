@@ -105,10 +105,10 @@ public class CompleteCheckActivity extends AppCompatActivity implements View.OnC
 
             bleMsgReceiveCallBack.setAudioAndVibrationFlag(true);
 
-            Button btn = (Button) v;
+            /*Button btn = (Button) v;
             btn.setText("获取中");
             btn.setTextColor(0xFFD0EFC6);
-            btn.setEnabled(false);
+            btn.setEnabled(false);*/
             //todo 当返回确认数据后，或者分析完数据后，或者页面显示获取到的数据后，按钮可以重新点击以重新获取
 
             //todo 开始和结束按钮等处理完数据之后才开始恢复可点击状态
@@ -118,12 +118,11 @@ public class CompleteCheckActivity extends AppCompatActivity implements View.OnC
                 //todo 没处理完数据或者没监测数据就点击了完成的处理
             }
 
-            //提交数据， loading，提交成功后取消loading。
+            //todo 提交数据， loading，提交成功后取消loading。
 
             int temp = bleReceiveData.getTemp();
             int humidity = bleReceiveData.getHumidity();
 
-            Toast.makeText(this, "当前温度:" + temp, Toast.LENGTH_SHORT).show();
             Toast.makeText(this, "当前湿度:" + humidity, Toast.LENGTH_SHORT).show();
 
             //数据解析
@@ -140,9 +139,9 @@ public class CompleteCheckActivity extends AppCompatActivity implements View.OnC
 
             extractingData(audioData, BluetoothCommand.DATA_TYPE_AUDIO);
 
-            extractingData(audioData, BluetoothCommand.DATA_TYPE_VIBRATION_X);
-            extractingData(audioData, BluetoothCommand.DATA_TYPE_VIBRATION_Y);
-            extractingData(audioData, BluetoothCommand.DATA_TYPE_VIBRATION_Z);
+            extractingData(vibrationXData, BluetoothCommand.DATA_TYPE_VIBRATION_X);
+            extractingData(vibrationYData, BluetoothCommand.DATA_TYPE_VIBRATION_Y);
+            extractingData(vibrationZData, BluetoothCommand.DATA_TYPE_VIBRATION_Z);
 
 
             Log.i(TAG, "音频数据:" + audioDataList);
@@ -180,10 +179,10 @@ public class CompleteCheckActivity extends AppCompatActivity implements View.OnC
     private void extractingData(byte[] audioData, byte dataType) {
         List<Integer> tempList = new ArrayList<>();
 
-        int audioSegmentCount = audioData.length / 1000;
-        int audioSegmentCountMod = audioData.length % 1000;
+        int audioSegmentCount = audioData.length / 500;
+        int audioSegmentCountMod = audioData.length % 500;
         for (int i = 0; i < audioSegmentCount  ; i++) {
-            for (int j = i * 1000 + 5; j < (i + 1) * 1000 - 3; j=j+2) {
+            for (int j = i * 500 + 5; j < (i + 1) * 500 - 3; j=j+2) {
                 byte firstByte = audioData[j];
                 byte secondByte = audioData[j+1];
 
@@ -194,7 +193,7 @@ public class CompleteCheckActivity extends AppCompatActivity implements View.OnC
 
         //处理剩余的,说明不是整数
         if (audioSegmentCountMod != 0) {
-            for (int n = audioSegmentCount * 1000 + 5; n < audioData.length - 3; n=n+2) {
+            for (int n = audioSegmentCount * 500 + 5; n < audioData.length - 3; n=n+2) {
                 byte firstByte = audioData[n];
                 byte secondByte = audioData[n+1];
 

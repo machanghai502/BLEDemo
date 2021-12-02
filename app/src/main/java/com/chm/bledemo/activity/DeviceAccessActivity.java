@@ -109,7 +109,7 @@ public class DeviceAccessActivity extends AppCompatActivity implements View.OnCl
                 //.useCharacteristicDescriptor(false)
                 //连接后开启通知的延迟时间，单位ms，默认200ms
                 //.notifyDelay(200)
-                .setMtu(100, new BleMtuChangedCallback() {
+                .setMtu(200, new BleMtuChangedCallback() {
                     @Override
                     public void onSetMTUFailure(int realMtuSize, BluetoothException bleException) {
                         Log.i(TAG, "bleException:" + bleException.getMessage() + "  realMtuSize:" + realMtuSize);

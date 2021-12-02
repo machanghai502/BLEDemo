@@ -60,7 +60,7 @@ public class BleMsgReceiveCallBack implements ReceiveCallBack {
 
     @Override
     public void onReceived(DataInputStream dataInputStream, byte[] result) {
-        Log.e("mylog", "收到蓝牙设备返回数据->" + Tools.bytesToHexString(result));
+        Log.e("mylog", "收到蓝牙设备返回数据->" + Tools.bytesToHexString(result) + "，长度:" + result.length);
         //温度固定12个字节
         if (tempFlag) {
             currentDataType = BluetoothCommand.DATA_TYPE_TEMP;
@@ -150,7 +150,8 @@ public class BleMsgReceiveCallBack implements ReceiveCallBack {
                     sendFailAck();
                 }
 
-                if (currentDataType == BluetoothCommand.DATA_TYPE_AUDIO) {
+                //todo
+                if (currentDataType == BluetoothCommand.DATA_TYPE_AUDIO || currentDataType == BluetoothCommand.DATA_TYPE_TEMP) {
                     bleReceiveData.setAudioData(Tools.mergeBytes(bleReceiveData.getAudioData(), tempByteArr));
                 } else if (currentDataType == BluetoothCommand.DATA_TYPE_VIBRATION_X) {
                     bleReceiveData.setVibrationXData(Tools.mergeBytes(bleReceiveData.getVibrationXData(), tempByteArr));
